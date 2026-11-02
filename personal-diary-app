@@ -1,0 +1,112 @@
+import json
+from datetime import datetime
+
+FILE_NAME = "diary_entries.json"
+
+
+def load_entries():
+    try:
+        with open(FILE_NAME, "r") as file:
+            return json.load(file)
+
+    except FileNotFoundError:
+        return []
+
+
+def save_entries(entries):
+    with open(FILE_NAME, "w") as file:
+        json.dump(entries, file, indent=4)
+
+
+def add_entry(entries):
+    print("\n===== NEW DIARY ENTRY =====")
+
+    title = input("Enter entry title: ").strip()
+    content = input("Write your diary entry: ").strip()
+
+    if not title or not content:
+        print("Title and entry cannot be empty!")
+        return
+
+    entry = {
+        "title": title,
+        "content": content,
+        "date": datetime.now().strftime("%d-%m-%Y %H:%M")
+    }
+
+    entries.append(entry)
+    save_entries(entries)
+
+    print("\nDiary entry saved successfully!")
+
+
+def view_entries(entries):
+    print("\n===== YOUR DIARY ENTRIES =====")
+
+    if not entries:
+        print("No diary entries found.")
+        return
+
+    for number, entry in enumerate(entries, start=1):
+        print(f"\nEntry {number}")
+        print(f"Title: {entry['title']}")
+        print(f"Date: {entry['date']}")
+        print(f"Content: {entry['content']}")
+
+
+def search_entries(entries):
+    print("\n===== SEARCH DIARY =====")
+
+    keyword = input("Enter a title or keyword: ").strip().lower()
+
+    if not keyword:
+        print("Please enter a search term.")
+        return
+
+    found = False
+
+    for entry in entries:
+        if (keyword in entry["title"].lower()
+                or keyword in entry["content"].lower()):
+
+            print("\nEntry found!")
+            print(f"Title: {entry['title']}")
+            print(f"Date: {entry['date']}")
+            print(f"Content: {entry['content']}")
+            found = True
+
+    if not found:
+        print("No matching entries found.")
+
+
+def main():
+    entries = load_entries()
+
+    while True:
+        print("\n===== PERSONAL DIARY APP =====")
+        print("1. Add a new entry")
+        print("2. View all entries")
+        print("3. Search entries")
+        print("4. Exit")
+
+        choice = input("\nChoose an option (1-4): ").strip()
+
+        if choice == "1":
+            add_entry(entries)
+
+        elif choice == "2":
+            view_entries(entries)
+
+        elif choice == "3":
+            search_entries(entries)
+
+        elif choice == "4":
+            print("\nThank you for using Personal Diary App!")
+            break
+
+        else:
+            print("\nInvalid choice. Please select 1-4.")
+
+
+if __name__ == "__main__":
+    main()
